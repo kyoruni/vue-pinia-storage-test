@@ -5,9 +5,14 @@ import type { Pokemon } from '@/interfaces';
 import { usePokemonsStore } from '@/stores/pokemons';
 
 const pokemonsStore = usePokemonsStore();
+pokemonsStore.prepareList();
 
 const pokemons = computed((): Map<number, Pokemon> => {
   return pokemonsStore.pokemons
+});
+
+const isEmptyList = computed((): boolean => {
+  return pokemonsStore.isPokemonsEmpty();
 });
 </script>
 
@@ -30,6 +35,9 @@ const pokemons = computed((): Map<number, Pokemon> => {
         <RouterLink :to="{ name: 'PokemonAdd' }">新規登録</RouterLink>
       </p>
       <ul>
+        <li v-if="isEmptyList">
+          ポケモンが登録されていません
+        </li>
         <li v-for="[id, pokemon] in pokemons" :key="id">
           ID: {{ id }}
           <RouterLink :to="{ name: 'PokemonDetail', params: { id: id } }">{{ pokemon.name }}</RouterLink>

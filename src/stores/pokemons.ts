@@ -14,32 +14,26 @@ export const usePokemonsStore = defineStore('pokemons', () => {
     const pokemon = pokemons.value.get(id) as Pokemon;
     return pokemon;
   };
+  const isPokemonsEmpty = (): boolean => {
+    return pokemons.value.size === 0;
+  };
   // action
-  function initList () {
-    pokemons.value.set(1, {
-      id: 1,
-      name: 'フシギダネ',
-      type1: 'くさ',
-      type2: 'どく',
-      species: 'たね',
-    });
-    pokemons.value.set(4, {
-      id: 4,
-      name: 'ヒトカゲ',
-      type1: 'ほのお',
-      species: 'とかげ',
-    });
-    pokemons.value.set(7, {
-      id: 7,
-      name: 'ゼニガメ',
-      type1: 'みず',
-      species: 'かめのこ',
-    });
+  function prepareList () {
+    let pokemonsData = new Map<number, Pokemon>();
+    const pokemonsJSONString = sessionStorage.getItem('pokemons');
+    // セッションストレージにデータがあれば取得
+    if (pokemonsJSONString) {
+      const pokemonsJSON = JSON.parse(pokemonsJSONString);
+      pokemonsData = new Map<number, Pokemon>(pokemonsJSON);
+    }
+    pokemons.value = pokemonsData;
   };
 
   function addPokemon (pokemon: Pokemon) {
     pokemons.value.set(pokemon.id, pokemon);
+    const pokemonJSONString = JSON.stringify([...pokemons.value]);
+    sessionStorage.setItem('pokemons', pokemonJSONString);
   };
 
-  return { pokemons, initList, getById, addPokemon };
+  return { pokemons, isPokemonsEmpty, prepareList, getById, addPokemon };
 });
